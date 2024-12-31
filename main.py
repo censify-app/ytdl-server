@@ -71,7 +71,8 @@ def search_videos():
         'format': 'bestaudio/best',
         'quiet': True,
         'no_warnings': True,
-        'extract_flat': True,
+        'extract_flat': 'in_playlist',
+        'force_generic_extractor': True
     }
     
     try:
@@ -82,12 +83,31 @@ def search_videos():
             videos = []
             for entry in results['entries']:
                 if entry:
+                    # Получаем среднее качество превью
+                    thumbnails = entry.get('thumbnails', [])
+                    preview_thumbnail = None
+                    if thumbnails:
+                        for thumb in thumbnails:
+                            if thumb.get('height', 0) <= 180:
+                                preview_thumbnail = thumb['url']
+                                break
+                    
+                    # Безопасное получение и форматирование длительности
+                    try:
+                        duration = int(entry.get('duration', 0))
+                        minutes = duration // 60
+                        seconds = duration % 60
+                        duration_str = f"{minutes}:{seconds:02d}"
+                    except (ValueError, TypeError):
+                        duration_str = "0:00"
+                    
                     videos.append({
                         'title': entry.get('title', ''),
                         'url': f"https://www.youtube.com/watch?v={entry.get('id', '')}",
-                        'thumbnail': entry.get('thumbnail', ''),
-                        'duration': entry.get('duration', 0),
-                        'channel': entry.get('channel', ''),
+                        'thumbnail': preview_thumbnail or entry.get('thumbnail', ''),
+                        'duration': duration_str,
+                        'channel': entry.get('uploader', ''),
+                        'channel_url': entry.get('uploader_url', '')
                     })
             
             return jsonify({
@@ -99,4 +119,4 @@ def search_videos():
         return jsonify({"error": f"Search error: {str(e)}"}), 400
 
 if __name__ == '__main__':
-    app.run(debug=False, port=8585)
+    app.run(debug=False, port=8888, host='0.0.0.0')
