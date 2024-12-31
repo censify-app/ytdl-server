@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>YouTube Audio Downloader</title>
+    <style>
+        body {
+            background-color: #1a1a1a;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #ff0000;
+            margin-bottom: 30px;
+        }
+
+        form {
+            background-color: #2d2d2d;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            width: 100%;
+            max-width: 500px;
+        }
+
+        input[type="url"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #404040;
+            color: white;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        input[type="url"]::placeholder {
+            color: #888;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #ff0000;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #cc0000;
+        }
+
+        small {
+            color: #888;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>YouTube Audio Downloader</h1>
+    <form action="/download" method="post">
+        <input type="url" name="url" placeholder="Paste YouTube video URL here" required>
+        <button type="submit">Download MP3</button>
+    </form>
+    <p><small>Maximum duration: 15 minutes</small></p>
+</body>
+</html> 
