@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, send_file
+from flask import Flask, render_template, request, redirect, url_for, send_file, jsonify
 from yt_dlp import YoutubeDL
 import os
 
@@ -58,6 +58,45 @@ def download_video():
                 
     except Exception as e:
         return f"Download error: {str(e)}", 400
+
+@app.route('/search', methods=['GET'])
+def search_videos():
+    query = request.args.get('query', '')
+    limit = min(int(request.args.get('limit', 5)), 20)
+    
+    if not query:
+        return jsonify({"error": "Query parameter is required"}), 400
+        
+    ydl_opts = {
+        'format': 'bestaudio/best',
+        'quiet': True,
+        'no_warnings': True,
+        'extract_flat': True,
+    }
+    
+    try:
+        with YoutubeDL(ydl_opts) as ydl:
+            search_query = f"ytsearch{limit}:{query}"
+            results = ydl.extract_info(search_query, download=False)
+            
+            videos = []
+            for entry in results['entries']:
+                if entry:
+                    videos.append({
+                        'title': entry.get('title', ''),
+                        'url': f"https://www.youtube.com/watch?v={entry.get('id', '')}",
+                        'thumbnail': entry.get('thumbnail', ''),
+                        'duration': entry.get('duration', 0),
+                        'channel': entry.get('channel', ''),
+                    })
+            
+            return jsonify({
+                'query': query,
+                'results': videos
+            })
+                
+    except Exception as e:
+        return jsonify({"error": f"Search error: {str(e)}"}), 400
 
 if __name__ == '__main__':
     app.run(debug=False, port=8585)
